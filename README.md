@@ -68,8 +68,8 @@ git clone https://github.com/MarshalW/pi-stepfun-provider
 cd pi-stepfun-provider
 pnpm install
 
-# Test locally without installing
-pi -e ./src/index.ts
+# Test locally without installing globally
+pi install -l .
 ```
 
 ## Package Structure

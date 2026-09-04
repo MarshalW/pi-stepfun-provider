@@ -5,7 +5,7 @@
  * Supports both API key and (future) OAuth authentication.
  *
  * Installation:
- *   pi install git:github.com/yourusername/pi-stepfun-provider
+ *   pi install git:github.com/MarshalW/pi-stepfun-provider
  *
  * Configuration:
  *   export STEPFUN_API_KEY=sk-xxx
