@@ -1,5 +1,5 @@
 {
-  "name": "pi-stepfun-provider",
+  "name": "@marshal/pi-stepfun-provider",
   "version": "0.1.0",
   "description": "StepFun model provider for pi coding agent",
   "type": "module",
@@ -15,9 +15,18 @@
     "type": "git",
     "url": "https://github.com/MarshalW/pi-stepfun-provider"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
   "pi": {
     "extensions": [
       "./src/index.ts"

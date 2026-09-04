@@ -13,13 +13,29 @@
 
 ## Installation
 
-```bash
-# Global installation (available in all projects)
-pi install git:github.com/MarshalW/pi-stepfun-provider
+**Recommended**: Install via npm for stable access and install statistics.
 
-# Project-local installation (shared via .pi/settings.json)
-pi install -l git:github.com/MarshalW/pi-stepfun-provider
+```bash
+# Install directly with pi (recommended)
+pi install npm:@marshal/pi-stepfun-provider
 ```
+
+Or standard npm install:
+
+```bash
+npm install -g @marshal/pi-stepfun-provider
+```
+
+> Note: `pi install npm:...` registers the extension globally. Plain `npm install -g` only downloads the package without registering it as a pi extension.
+
+**Alternative**: Install from GitHub (for source access or custom modifications).
+
+```bash
+# Install from GitHub repo
+pi install git:github.com/MarshalW/pi-stepfun-provider
+```
+
+> Users in China are encouraged to use the npm method, as GitHub access may be unreliable.
 
 ## Configuration
 
