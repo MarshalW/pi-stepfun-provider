@@ -13,7 +13,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MarshalW/pi-stepfun-provider"
+    "url": "git+https://github.com/MarshalW/pi-stepfun-provider.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
