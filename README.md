@@ -8,8 +8,8 @@
 - 🔑 **API key authentication** - Via `STEPFUN_API_KEY` environment variable
 - 🔄 **Dynamic model discovery** - Fetches latest models from StepFun API
 - 💰 **Cost tracking** - Input/output/cache token costs displayed
-- 🧠 **Reasoning support** - Step-2 and reasoning models supported
-- 🖼️ **Vision support** - Step-1v and other vision models
+- 🧠 **Reasoning support** - Reasoning models with `reasoning_effort` (low/medium/high)
+- 🖼️ **Vision support** - Step 3.7 Flash native image understanding
 
 ## Installation
 
@@ -55,19 +55,19 @@ pi
 
 Then use `/model` to select a StepFun model:
 
-- `stepfun/step-1o` - General purpose model
-- `stepfun/step-1v` - Vision model
-- `stepfun/step-2` - Reasoning model (supports thinking)
+- `stepfun/step-3.7-flash` - Flagship multimodal reasoning model (image/video understanding)
+- `stepfun/step-3.5-flash` - Flagship text reasoning model
+- `stepfun/step-3.5-flash-2603` - Agent-optimized reasoning model
 
 ## Available Models
 
 | Model ID | Name | Reasoning | Vision | Context | Max Output |
 |----------|------|-----------|--------|---------|------------|
-| `step-1o` | Step-1o | ❌ | ✅ | 128k | 8k |
-| `step-1v` | Step-1v | ❌ | ✅ | 128k | 8k |
-| `step-2` | Step-2 | ✅ | ✅ | 200k | 16k |
+| `step-3.7-flash` | Step 3.7 Flash | ✅ | ✅ | 256k | 64k |
+| `step-3.5-flash` | Step 3.5 Flash | ✅ | ❌ | 256k | 64k |
+| `step-3.5-flash-2603` | Step 3.5 Flash 2603 | ✅ | ❌ | 256k | 64k |
 
-*Additional models discovered dynamically from StepFun API.*
+*Specs verified against the [official docs](https://platform.stepfun.com/docs/zh/guides/models/overview). Additional models discovered dynamically from StepFun API.*
 
 ## Refreshing Models
 
