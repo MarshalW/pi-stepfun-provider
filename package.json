@@ -1,0 +1,47 @@
+{
+  "name": "pi-stepfun-provider",
+  "version": "0.1.0",
+  "description": "StepFun model provider for pi coding agent",
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "stepfun",
+    "ai",
+    "llm"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MarshalW/pi-stepfun-provider"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "pi": {
+    "extensions": [
+      "./src/index.ts"
+    ]
+  },
+  "dependencies": {
+    "openai": "^4.50.0"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*",
+    "typebox": "*"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "@google/genai",
+      "protobufjs"
+    ]
+  }
+}
