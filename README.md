@@ -45,7 +45,15 @@ Set your StepFun API key:
 export STEPFUN_API_KEY=sk-xxxxxxxxxxxxxxxx
 ```
 
-Add to your shell profile (`.bashrc`, `.zshrc`, etc.) for persistence.
+### Step Plan
+
+StepFun's Step Plan subscription uses a separate endpoint. If you subscribed via [Step Plan](https://platform.stepfun.ai/step_plan), set the base URL:
+
+```bash
+export STEPFUN_BASE_URL=https://api.stepfun.com/step_plan/v1
+```
+
+> Add both environment variables to your shell profile (`.bashrc`, `.zshrc`, etc.) for persistence.
 
 ## Usage
 

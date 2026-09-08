@@ -28,17 +28,12 @@ export function streamStepFun(
   context: Context,
   options?: SimpleStreamOptions
 ): AssistantMessageEventStream {
-  // Ensure the model uses the correct base URL for StepFun
   const modelWithBaseUrl: Model<Api> = {
     ...model,
     baseUrl: model.baseUrl ?? "https://api.stepfun.com/v1",
   };
 
-  // Delegate to built-in OpenAI completions handler
-  // StepFun should be fully compatible with OpenAI chat completions format
   return openAICompletionsApi().streamSimple(modelWithBaseUrl, context, {
     ...options,
-    // StepFun-specific request adjustments can go here if needed
-    // e.g., custom headers, parameter transformations
   });
 }

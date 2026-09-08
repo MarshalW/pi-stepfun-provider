@@ -21,9 +21,12 @@ import { streamStepFun } from "./streaming.js";
 import { stepFunOAuth } from "./auth.js";
 
 export default function (pi: ExtensionAPI) {
+  const baseUrl =
+    process.env.STEPFUN_BASE_URL ?? "https://api.stepfun.com/v1";
+
   pi.registerProvider("stepfun", {
     name: "StepFun",
-    baseUrl: "https://api.stepfun.com/v1",
+    baseUrl,
     apiKey: "$STEPFUN_API_KEY",
     api: "openai-completions",
     models: MODELS,

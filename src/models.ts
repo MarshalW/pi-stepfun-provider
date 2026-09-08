@@ -15,28 +15,70 @@ export const MODEL_SPECS: Record<string, ProviderModelConfig> = {
     id: "step-3.7-flash",
     name: "Step 3.7 Flash",
     reasoning: true,
+    thinkingLevelMap: {
+      off: null,
+      minimal: null,
+      low: "low",
+      medium: "medium",
+      high: "high",
+      xhigh: null,
+      max: null,
+    },
     input: ["text", "image"],
     cost: { input: 1.35, output: 8.1, cacheRead: 0.27, cacheWrite: 1.35 },
-    contextWindow: 256000,
+    contextWindow: 262144,
     maxTokens: 65536,
+    compat: {
+      supportsDeveloperRole: false,
+      supportsReasoningEffort: true,
+      maxTokensField: "max_tokens",
+    },
   },
   "step-3.5-flash": {
     id: "step-3.5-flash",
     name: "Step 3.5 Flash",
     reasoning: true,
+    thinkingLevelMap: {
+      off: null,
+      minimal: null,
+      low: "low",
+      medium: "medium",
+      high: "high",
+      xhigh: null,
+      max: null,
+    },
     input: ["text"],
     cost: { input: 0.7, output: 2.1, cacheRead: 0.14, cacheWrite: 0.7 },
-    contextWindow: 256000,
+    contextWindow: 262144,
     maxTokens: 65536,
+    compat: {
+      supportsDeveloperRole: false,
+      supportsReasoningEffort: true,
+      maxTokensField: "max_tokens",
+    },
   },
   "step-3.5-flash-2603": {
     id: "step-3.5-flash-2603",
     name: "Step 3.5 Flash 2603",
     reasoning: true,
+    thinkingLevelMap: {
+      off: null,
+      minimal: null,
+      low: "low",
+      medium: "medium",
+      high: "high",
+      xhigh: null,
+      max: null,
+    },
     input: ["text"],
     cost: { input: 0.7, output: 2.1, cacheRead: 0.14, cacheWrite: 0.7 },
-    contextWindow: 256000,
+    contextWindow: 262144,
     maxTokens: 65536,
+    compat: {
+      supportsDeveloperRole: false,
+      supportsReasoningEffort: true,
+      maxTokensField: "max_tokens",
+    },
   },
 };
 
@@ -44,12 +86,28 @@ export const MODEL_SPECS: Record<string, ProviderModelConfig> = {
 export const MODELS: ProviderModelConfig[] = Object.values(MODEL_SPECS);
 
 /** Conservative fallback for models not in the spec table */
+const FALLBACK_THINKING_LEVEL_MAP = {
+  off: null,
+  minimal: null,
+  low: "low",
+  medium: "medium",
+  high: "high",
+  xhigh: null,
+  max: null,
+};
+const FALLBACK_COMPAT = {
+  supportsDeveloperRole: false,
+  supportsReasoningEffort: true,
+  maxTokensField: "max_tokens",
+};
 const FALLBACK_COST = {
   input: 0.7,
   output: 2.1,
   cacheRead: 0.14,
   cacheWrite: 0.7,
 };
+const STEPFUN_BASE_URL =
+  process.env.STEPFUN_BASE_URL ?? "https://api.stepfun.com/v1";
 
 /**
  * Dynamic model discovery from StepFun API.
@@ -71,7 +129,7 @@ export async function fetchModels(
   }
 
   try {
-    const response = await fetch("https://api.stepfun.com/v1/models", {
+    const response = await fetch(`${STEPFUN_BASE_URL}/models`, {
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
@@ -104,10 +162,12 @@ export async function fetchModels(
         id: m.id,
         name: m.id,
         reasoning: false,
+        thinkingLevelMap: FALLBACK_THINKING_LEVEL_MAP,
         input: ["text"],
         cost: FALLBACK_COST,
         contextWindow: 128000,
         maxTokens: 65536,
+        compat: FALLBACK_COMPAT,
       };
     });
   } catch (error) {
