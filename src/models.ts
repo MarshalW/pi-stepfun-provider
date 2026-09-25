@@ -9,8 +9,42 @@
 import type { ProviderModelConfig } from "@earendil-works/pi-coding-agent";
 import type { RefreshModelsContext } from "@earendil-works/pi-ai";
 
-/** Officially verified model specs (cost in $/M tokens per StepFun pricing page) */
+/**
+ * Officially verified model specs.
+ *
+ * `cost` is in **USD** per 1M tokens and always comes from the English pricing
+ * page (platform.stepfun.com/docs/en/guides/pricing/details). The Chinese page
+ * quotes CNY, so never copy its numbers into these fields.
+ *
+ * Reference (2026-09):
+ *   step-5-preview    1M ctx / 64K out  $1.00  $2.70  (cache hit $0.05)
+ *   step-3.7-flash  256K ctx / 64K out  $0.20  $1.15  (cache hit $0.04)
+ *   step-3.5-flash* 256K ctx / 64K out  $0.10  $0.30  (cache hit $0.02)
+ */
 export const MODEL_SPECS: Record<string, ProviderModelConfig> = {
+  "step-5-preview": {
+    id: "step-5-preview",
+    name: "Step 5 Preview",
+    reasoning: true,
+    thinkingLevelMap: {
+      off: null,
+      minimal: null,
+      low: "low",
+      medium: "medium",
+      high: "high",
+      xhigh: null,
+      max: null,
+    },
+    input: ["text", "image"],
+    cost: { input: 1.0, output: 2.7, cacheRead: 0.05, cacheWrite: 1.0 },
+    contextWindow: 1024000,
+    maxTokens: 65536,
+    compat: {
+      supportsDeveloperRole: false,
+      supportsReasoningEffort: true,
+      maxTokensField: "max_tokens",
+    },
+  },
   "step-3.7-flash": {
     id: "step-3.7-flash",
     name: "Step 3.7 Flash",
@@ -25,7 +59,7 @@ export const MODEL_SPECS: Record<string, ProviderModelConfig> = {
       max: null,
     },
     input: ["text", "image"],
-    cost: { input: 1.35, output: 8.1, cacheRead: 0.27, cacheWrite: 1.35 },
+    cost: { input: 0.2, output: 1.15, cacheRead: 0.04, cacheWrite: 0.2 },
     contextWindow: 262144,
     maxTokens: 65536,
     compat: {
@@ -48,7 +82,7 @@ export const MODEL_SPECS: Record<string, ProviderModelConfig> = {
       max: null,
     },
     input: ["text"],
-    cost: { input: 0.7, output: 2.1, cacheRead: 0.14, cacheWrite: 0.7 },
+    cost: { input: 0.1, output: 0.3, cacheRead: 0.02, cacheWrite: 0.1 },
     contextWindow: 262144,
     maxTokens: 65536,
     compat: {
@@ -71,7 +105,7 @@ export const MODEL_SPECS: Record<string, ProviderModelConfig> = {
       max: null,
     },
     input: ["text"],
-    cost: { input: 0.7, output: 2.1, cacheRead: 0.14, cacheWrite: 0.7 },
+    cost: { input: 0.1, output: 0.3, cacheRead: 0.02, cacheWrite: 0.1 },
     contextWindow: 262144,
     maxTokens: 65536,
     compat: {
@@ -86,7 +120,7 @@ export const MODEL_SPECS: Record<string, ProviderModelConfig> = {
 export const MODELS: ProviderModelConfig[] = Object.values(MODEL_SPECS);
 
 /** Conservative fallback for models not in the spec table */
-const FALLBACK_THINKING_LEVEL_MAP = {
+const REASONING_THINKING_LEVEL_MAP = {
   off: null,
   minimal: null,
   low: "low",
@@ -95,23 +129,42 @@ const FALLBACK_THINKING_LEVEL_MAP = {
   xhigh: null,
   max: null,
 };
+const NO_REASONING_THINKING_LEVEL_MAP = {
+  off: null,
+  minimal: null,
+  low: null,
+  medium: null,
+  high: null,
+  xhigh: null,
+  max: null,
+};
 const FALLBACK_COMPAT = {
   supportsDeveloperRole: false,
   supportsReasoningEffort: true,
   maxTokensField: "max_tokens",
 };
-const FALLBACK_COST = {
-  input: 0.7,
-  output: 2.1,
-  cacheRead: 0.14,
-  cacheWrite: 0.7,
-};
+/** Unknown pricing is reported as zero rather than as a guessed (wrong) number */
+const UNKNOWN_COST = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
+/** Used only when the API omits `max_input_tokens` */
+const FALLBACK_CONTEXT_WINDOW = 128000;
 const STEPFUN_BASE_URL =
   process.env.STEPFUN_BASE_URL ?? "https://api.stepfun.com/v1";
 
+/** Subset of `/v1/models` payload we rely on (verified against the live API) */
+interface StepFunModelInfo {
+  id: string;
+  max_input_tokens?: number;
+  enable_vision_input?: boolean;
+  enable_reason?: boolean;
+}
+
 /**
  * Dynamic model discovery from StepFun API.
- * Known ids are served from MODEL_SPECS; unknown ids get a conservative fallback.
+ *
+ * Known ids come from MODEL_SPECS (curated specs + USD pricing). Unknown ids are
+ * built from the API's own metadata (`max_input_tokens`, `enable_vision_input`,
+ * `enable_reason`) instead of hard-coded guesses, so a new model such as
+ * `step-5-preview` reports its real 1M context immediately.
  */
 export async function fetchModels(
   context: RefreshModelsContext
@@ -145,7 +198,7 @@ export async function fetchModels(
     }
 
     const data = (await response.json()) as {
-      data?: Array<{ id: string }>;
+      data?: StepFunModelInfo[];
     };
 
     if (!data.data || !Array.isArray(data.data)) {
@@ -158,14 +211,22 @@ export async function fetchModels(
       if (spec) {
         return spec;
       }
+      const reasoning = m.enable_reason === true;
+      const contextWindow =
+        typeof m.max_input_tokens === "number" && m.max_input_tokens > 0
+          ? m.max_input_tokens
+          : FALLBACK_CONTEXT_WINDOW;
+
       return {
         id: m.id,
         name: m.id,
-        reasoning: false,
-        thinkingLevelMap: FALLBACK_THINKING_LEVEL_MAP,
-        input: ["text"],
-        cost: FALLBACK_COST,
-        contextWindow: 128000,
+        reasoning,
+        thinkingLevelMap: reasoning
+          ? REASONING_THINKING_LEVEL_MAP
+          : NO_REASONING_THINKING_LEVEL_MAP,
+        input: m.enable_vision_input === true ? ["text", "image"] : ["text"],
+        cost: UNKNOWN_COST,
+        contextWindow,
         maxTokens: 65536,
         compat: FALLBACK_COMPAT,
       };

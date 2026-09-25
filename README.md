@@ -63,7 +63,8 @@ pi
 
 Then use `/model` to select a StepFun model:
 
-- `stepfun/step-3.7-flash` - Flagship multimodal reasoning model (image/video understanding)
+- `stepfun/step-5-preview` - 1M-context flagship reasoning model (image/video understanding)
+- `stepfun/step-3.7-flash` - Multimodal reasoning model (image/video understanding)
 - `stepfun/step-3.5-flash` - Flagship text reasoning model
 - `stepfun/step-3.5-flash-2603` - Agent-optimized reasoning model
 
@@ -71,11 +72,17 @@ Then use `/model` to select a StepFun model:
 
 | Model ID | Name | Reasoning | Vision | Context | Max Output |
 |----------|------|-----------|--------|---------|------------|
+| `step-5-preview` | Step 5 Preview | ✅ | ✅ | 1M | 64k |
 | `step-3.7-flash` | Step 3.7 Flash | ✅ | ✅ | 256k | 64k |
 | `step-3.5-flash` | Step 3.5 Flash | ✅ | ❌ | 256k | 64k |
 | `step-3.5-flash-2603` | Step 3.5 Flash 2603 | ✅ | ❌ | 256k | 64k |
 
-*Specs verified against the [official docs](https://platform.stepfun.com/docs/zh/guides/models/overview). Additional models discovered dynamically from StepFun API.*
+*Specs verified against the [official docs](https://platform.stepfun.com/docs/zh/guides/models/overview); `cost` values are **USD** per 1M tokens from the [English pricing page](https://platform.stepfun.com/docs/en/guides/pricing/details) (the Chinese page quotes CNY).*
+
+Model ids that are not in the curated table above are discovered dynamically from `GET /v1/models` and built from the
+API-reported metadata (`max_input_tokens`, `enable_vision_input`, `enable_reason`) instead of hard-coded defaults —
+so a brand-new model id reports its real context window on first sight. Unknown pricing is reported as `0` rather
+than as a guessed value.
 
 ## Refreshing Models
 
