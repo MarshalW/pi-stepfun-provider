@@ -2,7 +2,7 @@
  * pi-stepfun-provider - StepFun Model Provider for pi
  *
  * Registers StepFun as a native model provider in pi coding agent.
- * Supports both API key and (future) OAuth authentication.
+ * Authenticates with an API key (`STEPFUN_API_KEY`).
  *
  * Installation:
  *   pi install git:github.com/MarshalW/pi-stepfun-provider
@@ -12,13 +12,12 @@
  *
  * Usage:
  *   pi
- *   /model  # Select stepfun/step-1o, stepfun/step-1v, etc.
+ *   /model  # Select stepfun/step-5-preview, stepfun/step-3.7-flash, etc.
  */
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { MODELS, fetchModels } from "./models.js";
 import { streamStepFun } from "./streaming.js";
-import { stepFunOAuth } from "./auth.js";
 
 export default function (pi: ExtensionAPI) {
   const baseUrl =
@@ -32,6 +31,5 @@ export default function (pi: ExtensionAPI) {
     models: MODELS,
     refreshModels: fetchModels,
     streamSimple: streamStepFun,
-    oauth: stepFunOAuth,
   });
 }
